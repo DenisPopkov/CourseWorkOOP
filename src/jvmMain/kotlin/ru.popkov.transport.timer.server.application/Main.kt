@@ -74,7 +74,7 @@ fun Application.routes() {
 
 fun HTML.index() {
     head {
-        title("Chat Room")
+        title("TransportTimerServer")
     }
     body {
         div {

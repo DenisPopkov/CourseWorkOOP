@@ -18,22 +18,20 @@ import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 
 fun main() {
-    val messages = mutableStateListOf<UserMessageAction>()
-    val handler = ServerActionHandlerImpl(messages)
+    val transportTrips = mutableStateListOf<UserMessageAction>()
+    val handler = ServerActionHandlerImpl(transportTrips)
     val chat = ChatStream(handler)
-
-    var inputText = ""
 
     renderComposable(rootElementId = "root") {
         Div({ style { padding(25.px) } }) {
 
-            H1 { Text("Chat Room") }
+            H1 { Text(StringsProvider.LOGO) }
 
             Hr()
 
             Div(attrs = {
                 style {
-                    height(300.px)
+                    height(100.px)
                     overflow("auto")
                     display(DisplayStyle.Flex)
                     flexDirection(FlexDirection.ColumnReverse)
@@ -45,7 +43,7 @@ fun main() {
                         flexDirection(FlexDirection.Column)
                     }
                 }) {
-                    messages.forEach {
+                    transportTrips.forEach {
                         val message = it
                         Div(attrs = {
                             style {
@@ -62,76 +60,39 @@ fun main() {
                                 style {
                                     fontWeight(500)
                                 }
-                            }){
+                            }) {
                                 Text("[${it.username}]: ${it.text}")
                             }
-                            Button(attrs = {
-                                onClick {
-                                    CoroutineScope(Dispatchers.Default).launch {
-                                        chat.send(DeleteMessageAction(message.id)) {
-                                            messages.add(UserMessageAction(0L.toString(),"${it.message}", "ERROR"))
-                                        }
-                                    }
-                                }
-                            }) {
-                                Text("X")
-                            }
                         }
                     }
                 }
-            }
-
-            Hr()
-
-            TextArea(attrs = {
-                style {
-                    width(300.px)
-                    height(50.px)
-                }
-                onInput {
-                    inputText = it.value.trim()
-                }
-            })
-
-            Button(attrs = {
-                onClick {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        if (inputText.isNotBlank()) {
-                            chat.send(NewMessageAction(inputText)) {
-                                messages.add(UserMessageAction(1L.toString(),"${it.message}", "ERROR"))
-                            }
-                        }
-                    }
-                }
-            }) {
-                Text("Send Message")
             }
         }
     }
 }
 
 class ServerActionHandlerImpl(
-    private val messages: SnapshotStateList<UserMessageAction>
+    private val transportTrips: SnapshotStateList<UserMessageAction>
 ) : ServerActionHandler {
     override suspend fun onError(e: Exception) {
-        messages.add(
-            UserMessageAction(0L.toString(),"${e.message}", "ERROR")
+        transportTrips.add(
+            UserMessageAction(0L.toString(), "${e.message}", "ERROR")
         )
     }
 
     override suspend fun onRemoveMessage(action: RemoveAction) {
         var itemToRemove: UserMessageAction? = null
-        for (message in messages) {
+        for (message in transportTrips) {
             if (message.id == action.id) {
                 itemToRemove = message
                 break
             }
         }
-        messages.remove(itemToRemove)
+        transportTrips.remove(itemToRemove)
     }
 
     override suspend fun onUserMessage(action: UserMessageAction) {
-        messages.add(action)
+        transportTrips.add(action)
     }
 }
 
