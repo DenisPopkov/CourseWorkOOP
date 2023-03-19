@@ -61,7 +61,7 @@ fun main() {
                                     fontWeight(500)
                                 }
                             }) {
-                                Text("[${it.username}]: ${it.text}")
+                                Text("[${it.tripNumber}]: ${it.tripComment}")
                             }
                         }
                     }
@@ -76,7 +76,7 @@ class ServerActionHandlerImpl(
 ) : ServerActionHandler {
     override suspend fun onError(e: Exception) {
         transportTrips.add(
-            UserMessageAction(0L.toString(), "${e.message}", "ERROR")
+            UserMessageAction(0L.toString(), tripNumber = "${e.message}", tripComment = "ERROR")
         )
     }
 

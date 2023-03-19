@@ -1,7 +1,10 @@
 package ru.popkov.transport.timer.server.application
 
 import com.jonastm.model.*
+import io.ktor.client.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.http.ContentType.Application.Json
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -9,9 +12,14 @@ import io.ktor.server.html.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import io.ktor.util.reflect.*
+import io.ktor.utils.io.pool.*
 import kotlinx.html.*
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -25,13 +33,16 @@ suspend fun sendAll(action: ServerAction) {
     }
 }
 
-class ClientActionHandlerImpl(private val connection: Connection): ClientActionHandler {
+class ClientActionHandlerImpl(private val connection: Connection) : ClientActionHandler {
     override suspend fun onNewMessage(action: NewMessageAction) {
-        sendAll(UserMessageAction(
-            Random.nextLong().toString(),
-            action.text,
-            connection.name
-        ))
+        sendAll(
+            UserMessageAction(
+                Random.nextLong().toString(),
+                action.text::class.java.typeName,
+                action.text,
+                connection.name
+            )
+        )
     }
 
     override suspend fun onDeleteMessage(action: DeleteMessageAction) {
@@ -43,14 +54,30 @@ class ClientActionHandlerImpl(private val connection: Connection): ClientActionH
     }
 }
 
+class Connection(
+    private val session: WebSocketServerSession
+) {
+
+    companion object {
+        val lastId = AtomicInteger(0)
+    }
+
+    val name = "user${lastId.getAndIncrement()}"
+
+    suspend fun send(msg: ServerAction) {
+        session.sendSerialized(msg)
+    }
+}
+
 fun main() {
-    embeddedServer(Netty, port = 8078, host = "127.0.0.1", module = Application::myApplicationModule).start(wait = true)
+    embeddedServer(Netty, port = 8087, host = "127.0.0.1", module = Application::myApplicationModule).start(wait = true)
 }
 
 fun Application.configuration() {
     install(CORS) {
         anyHost()
         allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
         allowHeaders { true }
     }
     install(WebSockets) {
@@ -62,6 +89,18 @@ fun Application.routes() {
     routing {
         get("/") {
             call.respondHtml(HttpStatusCode.OK, HTML::index)
+        }
+        post("/trip") {
+            val body = call.receiveText()
+
+            connections.last().send(
+                UserMessageAction(
+                    Random.nextLong().toString(),
+                    body::class.java.typeName,
+                    body,
+                    body
+                )
+            )
         }
         static("/static") {
             resources()
@@ -92,7 +131,7 @@ suspend fun WebSocketServerSession.handleNewConnection() {
     val handler = ClientActionHandlerImpl(thisConnection)
 
     try {
-        thisConnection.send(UserMessageAction(Random.nextLong().toString(),"Welcome to our server", "Server"))
+        thisConnection.send(UserMessageAction(Random.nextLong().toString(), tripNumber = "Welcome to our server", tripComment = "Server"))
         while (true) {
             val action = receiveDeserialized<ClientAction>()
             onAction(action, handler)
@@ -102,21 +141,6 @@ suspend fun WebSocketServerSession.handleNewConnection() {
     } finally {
         println("Removing $thisConnection!")
         connections.remove(thisConnection)
-    }
-}
-
-class Connection(
-    private val session: WebSocketServerSession
-) {
-
-    companion object {
-        val lastId = AtomicInteger(0)
-    }
-
-    val name = "user${lastId.getAndIncrement()}"
-
-    suspend fun send(msg: ServerAction) {
-        session.sendSerialized(msg)
     }
 }
 
