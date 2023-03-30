@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class ClientAction()
+sealed class ClientAction
 
 @Serializable
 @SerialName("new_msg")
@@ -15,7 +15,7 @@ class NewMessageAction(
 @Serializable
 @SerialName("remove")
 class DeleteMessageAction(
-    val id: String,
+    val id: Int,
 ) : ClientAction()
 
 interface ClientActionHandler {

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "707606191670",
+    "project_id": "transporttimerbd",
+    "storage_bucket": "transporttimerbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707606191670:android:7c1346caf0dc5ef6604297",
+        "android_client_info": {
+          "package_name": "ru.popkov.transport.timer.server"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "707606191670-r316atfoe6m87grq6g4c9093anf7rti4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmCAB97Z0ooP2cZ61oKkXs7wyybsqPesI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707606191670-r316atfoe6m87grq6g4c9093anf7rti4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

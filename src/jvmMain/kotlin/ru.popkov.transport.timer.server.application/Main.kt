@@ -1,10 +1,7 @@
 package ru.popkov.transport.timer.server.application
 
 import com.jonastm.model.*
-import io.ktor.client.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.ContentType.Application.Json
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -13,13 +10,9 @@ import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import io.ktor.util.reflect.*
-import io.ktor.utils.io.pool.*
 import kotlinx.html.*
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -37,8 +30,7 @@ class ClientActionHandlerImpl(private val connection: Connection) : ClientAction
     override suspend fun onNewMessage(action: NewMessageAction) {
         sendAll(
             UserMessageAction(
-                Random.nextLong().toString(),
-                action.text::class.java.typeName,
+                Random.nextLong().toInt(),
                 action.text,
                 connection.name
             )
@@ -95,8 +87,7 @@ fun Application.routes() {
 
             connections.last().send(
                 UserMessageAction(
-                    Random.nextLong().toString(),
-                    body::class.java.typeName,
+                    Random.nextLong().toInt(),
                     body,
                     body
                 )
@@ -131,7 +122,13 @@ suspend fun WebSocketServerSession.handleNewConnection() {
     val handler = ClientActionHandlerImpl(thisConnection)
 
     try {
-        thisConnection.send(UserMessageAction(Random.nextLong().toString(), tripNumber = "Welcome to our server", tripComment = "Server"))
+        thisConnection.send(
+            UserMessageAction(
+                Random.nextLong().toInt(),
+                tripNumber = "Welcome to our server",
+                tripComment = "Server"
+            )
+        )
         while (true) {
             val action = receiveDeserialized<ClientAction>()
             onAction(action, handler)

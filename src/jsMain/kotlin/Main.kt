@@ -1,6 +1,10 @@
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.jonastm.model.*
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.FirebaseOptions
+import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.initialize
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.websocket.*
@@ -17,21 +21,55 @@ import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 
+var currentMessage = 1
+val firebaseApp by lazy {
+    Firebase.initialize(
+        options = FirebaseOptions(
+            applicationId = "1:707606191670:android:7c1346caf0dc5ef6604297",
+            apiKey = "",
+            storageBucket = "",
+            projectId = "transporttimerbd",
+        )
+    )
+}
+
+private suspend fun addToBD(userName: String, message: Any) {
+    val firestore = Firebase.firestore(firebaseApp)
+    val newData = hashMapOf(
+        "${currentMessage}_$userName" to message,
+    )
+    firestore
+        .collection("TransportTimer")
+        .document("kietJiwINlvw6srvCSCE")
+        .update(newData)
+
+    currentMessage++
+}
+
+private val USER_NAME = listOf(
+    "Denis",
+    "Artem",
+    "Angelina",
+    "Vlad"
+).random()
+
 fun main() {
+
     val transportTrips = mutableStateListOf<UserMessageAction>()
     val handler = ServerActionHandlerImpl(transportTrips)
     val chat = ChatStream(handler)
+    var inputText = ""
 
     renderComposable(rootElementId = "root") {
         Div({ style { padding(25.px) } }) {
 
-            H1 { Text(StringsProvider.LOGO) }
+            H1 { Text("Transport Room") }
 
             Hr()
 
             Div(attrs = {
                 style {
-                    height(100.px)
+                    height(300.px)
                     overflow("auto")
                     display(DisplayStyle.Flex)
                     flexDirection(FlexDirection.ColumnReverse)
@@ -53,6 +91,7 @@ fun main() {
                                 gap(10.px)
                             }
                         }) {
+                            val msg = "[${it.tripNumber}]: ${it.tripComment}"
                             P {
                                 Text(convertTime(message.time))
                             }
@@ -61,11 +100,50 @@ fun main() {
                                     fontWeight(500)
                                 }
                             }) {
-                                Text("[${it.tripNumber}]: ${it.tripComment}")
+                                Text(msg)
+                            }
+                            Button(attrs = {
+                                onClick {
+                                    CoroutineScope(Dispatchers.Default).launch {
+                                        chat.send(DeleteMessageAction(message.id)) { exception ->
+                                            transportTrips.add(UserMessageAction(0, "${exception.message}", "ERROR"))
+                                        }
+                                    }
+                                }
+                            }) {
+                                Text("X")
                             }
                         }
                     }
                 }
+            }
+
+            Hr()
+
+            TextArea(attrs = {
+                style {
+                    width(300.px)
+                    height(50.px)
+                }
+                onInput {
+                    inputText = it.value.trim()
+                }
+            })
+
+            Button(attrs = {
+                onClick {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        if (inputText.isNotBlank()) {
+                            addToBD(USER_NAME, inputText)
+                            chat.send(NewMessageAction(inputText)) {
+                                transportTrips.add(UserMessageAction(1, "${it.message}", "ERROR"))
+                            }
+                            inputText = ""
+                        }
+                    }
+                }
+            }) {
+                Text("Send Message")
             }
         }
     }
@@ -76,7 +154,7 @@ class ServerActionHandlerImpl(
 ) : ServerActionHandler {
     override suspend fun onError(e: Exception) {
         transportTrips.add(
-            UserMessageAction(0L.toString(), tripNumber = "${e.message}", tripComment = "ERROR")
+            UserMessageAction(0, tripNumber = "${e.message}", tripComment = "ERROR")
         )
     }
 
