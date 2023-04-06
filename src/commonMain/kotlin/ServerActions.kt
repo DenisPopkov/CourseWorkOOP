@@ -1,5 +1,3 @@
-package com.jonastm.model
-
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.*

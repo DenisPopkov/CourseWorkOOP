@@ -5,26 +5,17 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
+import kotlin.reflect.KClass
 
 sealed class ServiceResult<out T : Any> {
     @Serializable
     data class Success<out T : Any>(val data: T) : ServiceResult<T>()
 }
 
-@ExperimentalSerializationApi
-class DynamicLookupSerializer : SerializationStrategy<Any> {
-    override val descriptor: SerialDescriptor = ContextualSerializer(Any::class, null, emptyArray()).descriptor
-
-    @OptIn(InternalSerializationApi::class)
-    override fun serialize(encoder: Encoder, value: Any) {
-        val actualSerializer = encoder.serializersModule.getContextual(value::class) ?: value::class.serializer()
-        encoder.encodeSerializableValue(actualSerializer as KSerializer<Any>, value)
+inline fun <reified T : Any> serializeServiceResult(x: ServiceResult<T>): Pair<String, KClass<T>> = when (x) {
+    is ServiceResult.Success -> {
+        Pair(Json.encodeToString(x.data), T::class)
     }
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-inline fun <reified T : Any> serializeServiceResult(x: ServiceResult<T>) = when (x) {
-    is ServiceResult.Success -> Json.encodeToString(serializer = DynamicLookupSerializer(), value = x.data)
 }
 
 inline fun <reified E : Enum<E>> enumValueOrError(value: String): E {

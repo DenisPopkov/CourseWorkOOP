@@ -1,6 +1,5 @@
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.jonastm.model.*
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.firestore.firestore
@@ -33,7 +32,7 @@ val firebaseApp by lazy {
     )
 }
 
-private suspend fun addToBD(userName: String, message: Any) {
+private suspend fun <T> addToBD(userName: String, message: T) {
     val firestore = Firebase.firestore(firebaseApp)
     val newData = hashMapOf(
         "${currentMessage}_$userName" to message,
@@ -44,6 +43,17 @@ private suspend fun addToBD(userName: String, message: Any) {
         .update(newData)
 
     currentMessage++
+}
+
+private suspend fun readFromBD(userName: String): Any {
+    val firestore = Firebase.firestore(firebaseApp)
+
+    return firestore
+        .collection("TransportTimer")
+        .document("kietJiwINlvw6srvCSCE")
+        .parent
+        .get()
+        .documents.last()
 }
 
 private val USER_NAME = listOf(
@@ -135,6 +145,7 @@ fun main() {
                     CoroutineScope(Dispatchers.Default).launch {
                         if (inputText.isNotBlank()) {
                             addToBD(USER_NAME, inputText)
+                            readFromBD(USER_NAME)
                             chat.send(NewMessageAction(inputText)) {
                                 transportTrips.add(UserMessageAction(1, "${it.message}", "ERROR"))
                             }

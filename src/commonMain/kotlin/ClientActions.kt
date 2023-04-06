@@ -1,5 +1,3 @@
-package com.jonastm.model
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
