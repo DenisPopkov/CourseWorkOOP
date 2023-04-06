@@ -89,17 +89,6 @@ fun Application.routes() {
         get("/") {
             call.respondHtml(HttpStatusCode.OK, HTML::index)
         }
-        post("/trip") {
-            val body = call.receiveText()
-
-            connections.last().send(
-                UserMessageAction(
-                    Random.nextLong().toInt(),
-                    body,
-                    body
-                )
-            )
-        }
         static("/static") {
             resources()
         }
