@@ -9,9 +9,7 @@ import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -32,7 +30,7 @@ val firebaseApp by lazy {
     )
 }
 
-private suspend fun <T> addToBD(userName: String, message: T) {
+suspend fun <T> addToBD(userName: String, message: T) {
     val firestore = Firebase.firestore(firebaseApp)
     val newData = hashMapOf(
         "${currentMessage}_$userName" to message,
@@ -45,7 +43,7 @@ private suspend fun <T> addToBD(userName: String, message: T) {
     currentMessage++
 }
 
-private suspend fun readFromBD(userName: String): Any {
+suspend fun readFromBD(): Any {
     val firestore = Firebase.firestore(firebaseApp)
 
     return firestore
@@ -145,7 +143,7 @@ fun main() {
                     CoroutineScope(Dispatchers.Default).launch {
                         if (inputText.isNotBlank()) {
                             addToBD(USER_NAME, inputText)
-                            readFromBD(USER_NAME)
+                            readFromBD()
                             chat.send(NewMessageAction(inputText)) {
                                 transportTrips.add(UserMessageAction(1, "${it.message}", "ERROR"))
                             }
