@@ -1,5 +1,6 @@
 package ru.popkov.transport.timer.server.application
 
+import com.google.gson.Gson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -65,3 +66,7 @@ object KotlinxGenericMapSerializer : KSerializer<Map<String, Any?>> {
         it.toAnyNullableValue()
     }
 }
+
+fun Any.fromClass() = Gson().toJson(this)
+
+
