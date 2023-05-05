@@ -1,6 +1,5 @@
 package ru.popkov.transport.timer.server.application
 
-import com.google.gson.Gson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -9,6 +8,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
+import kotlin.reflect.KClass
 
 object KotlinxGenericMapSerializer : KSerializer<Map<String, Any?>> {
 
@@ -23,8 +23,13 @@ object KotlinxGenericMapSerializer : KSerializer<Map<String, Any?>> {
     override fun deserialize(decoder: Decoder): Map<String, Any?> {
         val jsonDecoder =
             decoder as? JsonDecoder ?: throw SerializationException("Can only deserialize Json content to generic Map")
-        val root = jsonDecoder.decodeJsonElement()
-        return if (root is JsonObject) root.toMap() else throw SerializationException("Cannot deserialize Json content to generic Map")
+        return when (val root = jsonDecoder.decodeJsonElement()) {
+            is JsonObject -> root.toMap()
+            is KClass<*> -> root.jsonObject.toMap()
+            else -> throw SerializationException(
+                "Cannot deserialize Json content to generic Map"
+            )
+        }
     }
 
     private fun Any?.toJsonElement(): JsonElement = when (this) {
@@ -66,7 +71,5 @@ object KotlinxGenericMapSerializer : KSerializer<Map<String, Any?>> {
         it.toAnyNullableValue()
     }
 }
-
-fun Any.fromClass() = Gson().toJson(this)
 
 

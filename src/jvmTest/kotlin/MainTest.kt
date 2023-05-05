@@ -1,15 +1,24 @@
-import com.google.gson.Gson
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import ru.popkov.transport.timer.server.application.KotlinxGenericMapSerializer
-import ru.popkov.transport.timer.server.application.fromClass
 import kotlin.test.assertEquals
 
-data class Test(
-    val name: String
+@Serializable
+data class Box<T>(val contents: T)
+
+@Serializable
+data class Data(
+    val a: Box<Int> = Box(42),
+    val b: Box<Project> = Box(Project("kotlinx.serialization", "Kotlin"))
 )
 
-data class Test2(
+@Serializable
+data class Project(val name: String, val language: String)
+
+@Serializable
+data class Model2(
     val names: List<String> = listOf("Denis", "Denis2")
 )
 
@@ -29,9 +38,10 @@ class MainTest {
 
     @Test
     fun serializationTest2() {
-        val testClass = Test(name = "John").fromClass()
-        val model: Map<String, Any?> = Json.decodeFromString(KotlinxGenericMapSerializer, testClass)
-        val correctData = listOf<Pair<String, Any>>("java.lang.String" to "John")
+        val testClass = Data(a = Box(39)).a
+        val preModel: String = Json.encodeToString(testClass)
+        val model: Map<String, Any?> = Json.decodeFromString(KotlinxGenericMapSerializer, preModel)
+        val correctData = listOf<Pair<String, Any>>("java.lang.Long" to 39L)
 
         model.entries.forEachIndexed { index, value ->
             assertEquals(value.value?.javaClass?.name, correctData[index].first) // assert Type of value
@@ -41,8 +51,9 @@ class MainTest {
 
     @Test
     fun serializationTest3() {
-        val testClass = Test2().fromClass()
-        val model: Map<String, Any?> = Json.decodeFromString(KotlinxGenericMapSerializer, testClass)
+        val testClass = Model2()
+        val preModel: String = Json.encodeToString(testClass)
+        val model: Map<String, Any?> = Json.decodeFromString(KotlinxGenericMapSerializer, preModel)
         val correctData = listOf<Pair<String, Any>>("java.util.ArrayList" to listOf("Denis", "Denis2"))
 
         model.entries.forEachIndexed { index, value ->
