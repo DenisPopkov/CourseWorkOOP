@@ -5,10 +5,10 @@ val kotlinx_html_version: String by project
 val kotlinx_datetime_version: String by project
 
 plugins {
-    kotlin("multiplatform") version "1.8.10"
+    kotlin("multiplatform")
+    kotlin("plugin.serialization") version "1.8.10"
     id("org.jetbrains.compose") version "1.4.0-alpha01-dev977"
     id("io.ktor.plugin") version "2.2.4"
-    kotlin("plugin.serialization") version "1.8.10"
     application
 }
 
@@ -79,6 +79,8 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinx_html_version")
                 implementation("com.google.firebase:firebase-bom:31.2.3")
                 implementation("com.google.firebase:firebase-firestore-ktx:24.4.5")
+                implementation("org.litote.kmongo:kmongo-serialization:4.9.0")
+                implementation("org.litote.kmongo:kmongo-id-serialization:4.9.0")
             }
         }
         val jvmTest by getting
@@ -121,4 +123,10 @@ buildscript {
     dependencies {
         classpath ("com.google.gms:google-services:4.3.15")
     }
+}
+dependencies {
+    testImplementation(project(mapOf("path" to ":")))
+    testImplementation(project(mapOf("path" to ":")))
+    testImplementation(project(mapOf("path" to ":")))
+    testImplementation(project(mapOf("path" to ":")))
 }
