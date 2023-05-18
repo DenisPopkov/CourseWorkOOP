@@ -1,11 +1,14 @@
 import com.mongodb.client.MongoDatabase
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Before
 import org.junit.Test
 import org.litote.kmongo.*
+import ru.popkov.transport.timer.server.application.AnyData
 import ru.popkov.transport.timer.server.application.KotlinxGenericMapSerializer
+import java.time.OffsetDateTime
 import kotlin.test.assertEquals
 
 @Serializable
@@ -24,11 +27,6 @@ data class Another(
 
 @Serializable
 data class Project(val name: String, val language: String)
-
-@Serializable
-data class Model2(
-    val names: List<String> = listOf("Denis", "Denis2")
-)
 
 class MainTest {
 
@@ -99,18 +97,34 @@ class MainTest {
             assertEquals(value.value, correctData[index].second)  // assert value
         }
     }
+}
 
+
+class AnyClass {
     @Test
-    fun serializationTest3() {
-        val testClass = Model2()
-        val preModel: String = Json.encodeToString(testClass)
-        val model: Map<String, Any?> = Json.decodeFromString(KotlinxGenericMapSerializer, preModel)
-        val correctData = listOf<Pair<String, Any>>("java.util.ArrayList" to listOf("Denis", "Denis2"))
+    fun test1() {
+        val anyData = AnyData(
+            name = "hello",
+            anyValue = null,
+            anyList = listOf("hi", 123, Long.MAX_VALUE, 2.7, true, null),
+            anyMap = mapOf(
+                true to listOf(123, 25.0, false),
+                false to listOf(1.2, 1.3, 0.5),
+                "RussianDoll" to mapOf(true to listOf(123, 25.0, false), false to listOf(1.2, 1.3, 0.5))
+            ),
+            dataFrame = mapOf(
+                "date" to listOf(
+                    OffsetDateTime.now(),
+                    OffsetDateTime.now().plusDays(1),
+                    OffsetDateTime.now().plusDays(2)
+                ),
+                "price" to listOf(1.2, 1.3, 0.5)
+            ),
+        )
 
-        model.entries.forEachIndexed { index, value ->
-            assertEquals(value.value?.javaClass?.name, correctData[index].first) // assert Type of value
-            assertEquals(value.value, correctData[index].second)  // assert value
-        }
+        val json = Json.encodeToString(anyData)
+        println("json: $json")
+        println("class: ${Json.decodeFromString<AnyData>(json)}")
     }
 }
 
