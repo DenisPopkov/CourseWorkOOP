@@ -1,11 +1,15 @@
 package ru.popkov.coursework.repo
 
-import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import common.Item
 import org.litote.kmongo.*
 import java.util.*
 
-class MongoRepo<E>(private val collection: MongoCollection<Map<String, E>>) : Repo<E> {
+class MongoRepo<E> : Repo<E> {
+
+    private val client = KMongo.createClient("mongodb://root:example@127.0.0.1:27017")
+    private val mongoDatabase: MongoDatabase = client.getDatabase("admin")
+    private val collection = mongoDatabase.getCollection<Map<String, E>>().apply { drop() }
 
     override fun create(element: E): Boolean {
         Item(UUID.randomUUID().toString(), element)
