@@ -10,7 +10,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import ru.popkov.coursework.application.main
+import ru.popkov.coursework.main
 
 class ApplicationTest : StringSpec({
     "Students routes" {

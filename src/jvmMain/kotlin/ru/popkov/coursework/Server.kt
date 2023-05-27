@@ -1,4 +1,4 @@
-package ru.popkov.coursework.application
+package ru.popkov.coursework
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -7,10 +7,9 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.delay
-import ru.popkov.coursework.application.repo.createTestData
-import ru.popkov.coursework.application.rest.lessonRoutes
-import ru.popkov.coursework.application.rest.studentRoutes
-
+import ru.popkov.coursework.repo.createTestData
+import ru.popkov.coursework.rest.lessonRoutes
+import ru.popkov.coursework.rest.studentRoutes
 
 fun main() {
     embeddedServer(

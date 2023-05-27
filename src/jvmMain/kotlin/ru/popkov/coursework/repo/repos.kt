@@ -1,4 +1,4 @@
-package ru.popkov.coursework.application.repo
+package ru.popkov.coursework.repo
 
 import com.mongodb.client.MongoDatabase
 import data.Grade

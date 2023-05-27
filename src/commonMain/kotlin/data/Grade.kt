@@ -2,7 +2,6 @@ package data
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 enum class Grade (val mark: Int){
     A(5),

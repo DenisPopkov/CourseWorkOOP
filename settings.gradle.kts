@@ -16,4 +16,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "TransportTimerServer"
+rootProject.name = "CourseWork"

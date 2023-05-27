@@ -1,4 +1,4 @@
-package ru.popkov.coursework.application.rest
+package ru.popkov.coursework.rest
 
 import common.Item
 import io.ktor.http.*
@@ -8,9 +8,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import ru.popkov.coursework.application.AnySerializer
-import ru.popkov.coursework.application.anySerializer
-import ru.popkov.coursework.application.repo.Repo
+import ru.popkov.coursework.AnySerializer
+import ru.popkov.coursework.anySerializer
+import ru.popkov.coursework.repo.Repo
 
 inline fun <reified T : Any> Route.repoRoutes(
     repo: Repo<T>

@@ -1,4 +1,4 @@
-package ru.popkov.coursework.application
+package ru.popkov.coursework
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
