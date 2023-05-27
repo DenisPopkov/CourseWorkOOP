@@ -12,6 +12,9 @@ plugins {
     application
 }
 
+val ktorVersion = "2.2.2"
+val kotestVersion = "5.5.4"
+
 group = "ru.popkov.transport.timer.server"
 version = "1.0-SNAPSHOT"
 
@@ -38,6 +41,9 @@ kotlin {
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
+        }
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
         }
         withJava()
     }
@@ -69,11 +75,22 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        val exposedVersion = "0.41.1"
         val jvmMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-server-netty")
+                implementation("io.ktor:ktor-server-netty:$ktorVersion")
+                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-server-test-host:$ktorVersion")
+                implementation("io.kotest:kotest-runner-junit5")
+                implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+                implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+                implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+                implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+                implementation("io.kotest:kotest-assertions-core")
+                implementation("org.mongodb:mongodb-driver-sync:4.2.3")
                 implementation("io.ktor:ktor-server-html-builder-jvm")
                 implementation("io.ktor:ktor-server-cors")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-server-websockets")
                 implementation("ch.qos.logback:logback-classic:1.2.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinx_html_version")
@@ -81,9 +98,19 @@ kotlin {
                 implementation("com.google.firebase:firebase-firestore-ktx:24.4.5")
                 implementation("org.litote.kmongo:kmongo-serialization:4.9.0")
                 implementation("org.litote.kmongo:kmongo-id-serialization:4.9.0")
+                implementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+                implementation("io.kotest:kotest-assertions-core:$kotestVersion")
+                implementation("org.litote.kmongo:kmongo-serialization:4.9.0")
+                implementation("org.litote.kmongo:kmongo-id-serialization:4.9.0")
             }
         }
-        val jvmTest by getting
+        val jvmTest by getting {
+            dependencies {
+                implementation("io.ktor:ktor-server-test-host:$ktorVersion")
+                implementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+                implementation("io.kotest:kotest-assertions-core:$kotestVersion")
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation(compose.web.core)
@@ -121,7 +148,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath ("com.google.gms:google-services:4.3.15")
+        classpath("com.google.gms:google-services:4.3.15")
     }
 }
 dependencies {
