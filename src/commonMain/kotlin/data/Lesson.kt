@@ -25,10 +25,6 @@ class GradeInfo(
 
 typealias LessonId = ItemId
 
-//val lessonJson: Json = Json {
-//    ignoreUnknownKeys = true
-//}
-
 val Lesson.json
     get(): String = Json.encodeToString(this)
 

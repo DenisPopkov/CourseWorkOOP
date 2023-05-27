@@ -15,7 +15,7 @@ plugins {
 val ktorVersion = "2.2.2"
 val kotestVersion = "5.5.4"
 
-group = "ru.popkov.transport.timer.server"
+group = "ru.popkov.coursework"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -23,10 +23,6 @@ repositories {
     mavenCentral()
     google()
     maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
-}
-
-application {
-    mainClass.set("ru.popkov.transport.timer.server.application.MainKt")
 }
 
 repositories {
@@ -94,8 +90,6 @@ kotlin {
                 implementation("io.ktor:ktor-server-websockets")
                 implementation("ch.qos.logback:logback-classic:1.2.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinx_html_version")
-                implementation("com.google.firebase:firebase-bom:31.2.3")
-                implementation("com.google.firebase:firebase-firestore-ktx:24.4.5")
                 implementation("org.litote.kmongo:kmongo-serialization:4.9.0")
                 implementation("org.litote.kmongo:kmongo-id-serialization:4.9.0")
                 implementation("io.kotest:kotest-runner-junit5:$kotestVersion")
@@ -120,8 +114,6 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion:11.9.3-pre.346")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutines_version")
                 implementation("io.ktor:ktor-client-js:$ktor_version")
-                implementation("com.google.firebase:firebase-bom:31.2.3")
-                implementation("dev.gitlive:firebase-firestore-js:1.7.2")
             }
         }
         val jsTest by getting {
@@ -146,9 +138,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-    }
-    dependencies {
-        classpath("com.google.gms:google-services:4.3.15")
     }
 }
 dependencies {

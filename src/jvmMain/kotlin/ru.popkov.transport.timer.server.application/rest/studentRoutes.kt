@@ -1,11 +1,11 @@
-package ru.popkov.transport.timer.server.application.rest
+package ru.popkov.coursework.application.rest
 
 import config.Config
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.popkov.transport.timer.server.application.repo.studentsRepo
+import ru.popkov.coursework.application.repo.studentsRepo
 
 fun Route.studentRoutes() {
     route(Config.studentsPath) {

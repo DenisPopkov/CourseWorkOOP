@@ -1,4 +1,4 @@
-package ru.popkov.transport.timer.server.application.rest
+package ru.popkov.coursework.application.rest
 
 import common.Item
 import io.ktor.http.*
@@ -6,13 +6,11 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
-import ru.popkov.transport.timer.server.application.AnySerializer
-import ru.popkov.transport.timer.server.application.anySerializer
-import ru.popkov.transport.timer.server.application.repo.Repo
+import ru.popkov.coursework.application.AnySerializer
+import ru.popkov.coursework.application.anySerializer
+import ru.popkov.coursework.application.repo.Repo
 
 inline fun <reified T : Any> Route.repoRoutes(
     repo: Repo<T>

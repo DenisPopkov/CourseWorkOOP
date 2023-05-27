@@ -1,4 +1,4 @@
-package ru.popkov.transport.timer.server.application
+package ru.popkov.coursework.application
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*

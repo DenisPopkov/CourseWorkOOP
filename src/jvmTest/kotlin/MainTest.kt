@@ -10,8 +10,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.litote.kmongo.json
-import ru.popkov.transport.timer.server.application.main
+import ru.popkov.coursework.application.main
 
 class ApplicationTest : StringSpec({
     "Students routes" {

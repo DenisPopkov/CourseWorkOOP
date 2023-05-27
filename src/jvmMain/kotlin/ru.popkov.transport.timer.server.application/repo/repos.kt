@@ -1,11 +1,10 @@
-package ru.popkov.transport.timer.server.application.repo
+package ru.popkov.coursework.application.repo
 
 import com.mongodb.client.MongoDatabase
+import data.Grade
+import data.GradeInfo
 import data.Lesson
 import data.Student
-import io.kotest.core.Tuple2
-import kotlinx.serialization.json.Json
-import org.bson.Document
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.getCollection
 
@@ -15,16 +14,8 @@ private val mongoDatabase: MongoDatabase = client.getDatabase("admin")
 private val student = mongoDatabase.getCollection<Map<String, Student>>().apply { drop() }
 private val lessons = mongoDatabase.getCollection<Map<String, Lesson>>().apply { drop() }
 
-val studentsRepo = MongoRepo<Student>(student)
-val lessonsRepo = MongoRepo<Lesson>(lessons)
-
-fun Document.toStudentMapper() = firstNotNullOf {
-    Student(it.key, it.value.toString())
-}
-
-private val json = Json {
-    ignoreUnknownKeys = true
-}
+val studentsRepo = MongoRepo(student)
+val lessonsRepo = MongoRepo(lessons)
 
 fun createTestData() {
     listOf(
@@ -50,17 +41,18 @@ fun createTestData() {
 
     val students = studentsRepo.read()
     val lessons = lessonsRepo.read()
-//    val sheldon = students.findLast { it.elem.firstname == "Sheldon" }
-//    check(sheldon != null)
-//    val leonard = students.findLast { it.elem.firstname == "Leonard" }
-//    check(leonard != null)
-//    val math = lessons.findLast { it.elem.name =="Math" }
-//    check(math != null)
-//    val newMath = Lesson(
-//        math.elem.name,
-//        arrayOf(
-//            GradeInfo(sheldon.id, Grade.A),
-//            GradeInfo(leonard.id, Grade.B)
-//        ))
-//    lessonsRepo.update(math.id, newMath)
+    val sheldon = students.findLast { it.elem.firstname == "Sheldon" }
+    check(sheldon != null)
+    val leonard = students.findLast { it.elem.firstname == "Leonard" }
+    check(leonard != null)
+    val math = lessons.findLast { it.elem.name == "Math" }
+    check(math != null)
+    val newMath = Lesson(
+        math.elem.name,
+        arrayOf(
+            GradeInfo(sheldon.id, Grade.A),
+            GradeInfo(leonard.id, Grade.B)
+        )
+    )
+    lessonsRepo.update(math.id, newMath)
 }

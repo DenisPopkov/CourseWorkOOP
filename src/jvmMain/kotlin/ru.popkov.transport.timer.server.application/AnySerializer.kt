@@ -1,4 +1,4 @@
-package ru.popkov.transport.timer.server.application
+package ru.popkov.coursework.application
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -9,7 +9,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.serializer
-
 
 inline fun <reified T : Any> anySerializer(): AnySerializer<T> {
     return AnySerializer(Json.serializersModule.serializer())

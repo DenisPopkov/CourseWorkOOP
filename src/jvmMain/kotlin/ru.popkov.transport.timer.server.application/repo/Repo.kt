@@ -1,4 +1,4 @@
-package ru.popkov.transport.timer.server.application.repo
+package ru.popkov.coursework.application.repo
 
 import common.Item
 
