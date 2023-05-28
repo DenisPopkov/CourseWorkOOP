@@ -1,5 +1,6 @@
 import common.Item
 import data.Student
+import data.json
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -33,38 +34,38 @@ class ApplicationTest : StringSpec({
                     elem.firstname shouldBe "Sheldon"
                 }
             }
-//            val newStudents = withClue("create") {
-//                val response = client.post("/students/") {
-//                    contentType(ContentType.Application.Json)
-//                    setBody(Student("Raj", "Koothrappali").json)
-//                }
-//                response.status shouldBe HttpStatusCode.Created
-//                Json.decodeFromString<List<Item<Student>>>(
-//                    client.get("/students/").bodyAsText()
-//                ).apply {
-//                    size shouldBe 5
-//                }
-//            }
-//            val emi = withClue("update") {
-//                val raj = newStudents.first { it.elem.firstname == "Raj" }
-//                client.put("/students/${raj.id}") {
-//                    contentType(ContentType.Application.Json)
-//                    setBody(Student("Amy", "Fowler").json)
-//                }
-//                Json.decodeFromString<Item<Student>>(
-//                    client.get("/students/${raj.id}").bodyAsText()
-//                ).apply {
-//                    elem.firstname shouldBe "Amy"
-//                }
-//            }
-//            withClue("delete") {
-//                client.delete("/students/${emi.id}")
-//                Json.decodeFromString<List<Item<Student>>>(
-//                    client.get("/students/").bodyAsText()
-//                ).apply {
-//                    size shouldBe 4
-//                }
-//            }
+            val newStudents = withClue("create") {
+                val response = client.post("/students/") {
+                    contentType(ContentType.Application.Json)
+                    setBody(Student("Raj", "Koothrappali").json)
+                }
+                response.status shouldBe HttpStatusCode.Created
+                Json.decodeFromString<List<Item<Student>>>(
+                    client.get("/students/").bodyAsText()
+                ).apply {
+                    size shouldBe 5
+                }
+            }
+            val emi = withClue("update") {
+                val raj = newStudents.first { it.elem.firstname == "Raj" }
+                client.put("/students/${raj.id}") {
+                    contentType(ContentType.Application.Json)
+                    setBody(Student("Sheldon", "Fowler").json)
+                }
+                Json.decodeFromString<Item<Student>>(
+                    client.get("/students/${raj.id}").bodyAsText()
+                ).apply {
+                    elem.firstname shouldBe "Sheldon"
+                }
+            }
+            withClue("delete") {
+                client.delete("/students/${emi.id}")
+                Json.decodeFromString<List<Item<Student>>>(
+                    client.get("/students/").bodyAsText()
+                ).apply {
+                    size shouldBe 5
+                }
+            }
         }
     }
 })

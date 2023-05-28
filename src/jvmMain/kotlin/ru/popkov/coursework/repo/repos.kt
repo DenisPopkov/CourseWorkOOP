@@ -1,16 +1,22 @@
 package ru.popkov.coursework.repo
 
+import com.mongodb.client.MongoDatabase
 import common.Item
+import data.Grade
+import data.GradeInfo
 import data.Lesson
 import data.Student
-import kotlinx.serialization.json.Json
-import org.bson.Document
-import org.litote.kmongo.json
-import ru.popkov.coursework.AnySerializer
-import ru.popkov.coursework.anySerializer
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.getCollection
 
-val studentsRepo = MongoRepo<Student>()
-val lessonsRepo = MongoRepo<Lesson>()
+private val client = KMongo.createClient("mongodb://root:example@127.0.0.1:27017")
+private val mongoDatabase: MongoDatabase = client.getDatabase("admin")
+
+private val students = mongoDatabase.getCollection<Student>().apply { drop() }
+private val lessons = mongoDatabase.getCollection<Lesson>().apply { drop() }
+
+val studentsRepo = MongoRepo<Student>(students)
+val lessonsRepo = MongoRepo<Lesson>(lessons)
 
 fun createTestData() {
     listOf(
@@ -24,15 +30,15 @@ fun createTestData() {
         }
     }
 
-//    listOf(
-//        Lesson("Math"),
-//        Lesson("Phys"),
-//        Lesson("Story"),
-//    ).apply {
-//        map {
-//            lessonsRepo.create(it)
-//        }
-//    }
+    listOf(
+        Lesson("Math"),
+        Lesson("Phys"),
+        Lesson("Story"),
+    ).apply {
+        map {
+            lessonsRepo.create(it)
+        }
+    }
 
     val students = studentsRepo.read()
     val studentList = mutableListOf<Item<Student>>()
@@ -52,19 +58,19 @@ fun createTestData() {
 //        println("efefe student - ${it.id}, ${it.elem.firstname}, ${it.elem.surname}")
 //    }
 
-//    val lessons = lessonsRepo.read()
-//    val sheldon = students.findLast { it.elem.firstname == "Sheldon" }
-//    check(sheldon != null)
-//    val leonard = students.findLast { it.elem.firstname == "Leonard" }
-//    check(leonard != null)
-//    val math = lessons.findLast { it.elem.name == "Math" }
-//    check(math != null)
-//    val newMath = Lesson(
-//        math.elem.name,
-//        arrayOf(
-//            GradeInfo(sheldon.id, Grade.A),
-//            GradeInfo(leonard.id, Grade.B)
-//        )
-//    )
-//    lessonsRepo.update(math.id, newMath)
+    val lessons = lessonsRepo.read()
+    val sheldon = students.findLast { it.elem.firstname == "Sheldon" }
+    check(sheldon != null)
+    val leonard = students.findLast { it.elem.firstname == "Leonard" }
+    check(leonard != null)
+    val math = lessons.findLast { it.elem.name == "Math" }
+    check(math != null)
+    val newMath = Lesson(
+        math.elem.name,
+        arrayOf(
+            GradeInfo(sheldon.id, Grade.A),
+            GradeInfo(leonard.id, Grade.B)
+        )
+    )
+    lessonsRepo.update(math.id, newMath)
 }
