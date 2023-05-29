@@ -8,6 +8,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.delay
 import ru.popkov.coursework.repo.createTestData
+import ru.popkov.coursework.rest.gradeRoutes
 import ru.popkov.coursework.rest.lessonRoutes
 import ru.popkov.coursework.rest.studentRoutes
 
@@ -46,5 +47,6 @@ fun Application.rest() {
     routing {
         studentRoutes()
         lessonRoutes()
+        gradeRoutes()
     }
 }

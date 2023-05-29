@@ -1,9 +1,9 @@
 package ru.popkov.coursework.repo
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.Filters
 import common.Item
-import io.kotest.assertions.print.print
+import io.ktor.server.html.*
 import org.litote.kmongo.*
 import java.util.*
 
@@ -15,7 +15,7 @@ class MongoRepo<E>(private val collection: MongoCollection<E>) : Repo<E> {
         Item(UUID.randomUUID().toString(), element)
             .let {
                 ids.add(it.id)
-                collection.insertOne(element)
+                collection.insertOne(it.elem)
             }
 
         return true
@@ -41,12 +41,12 @@ class MongoRepo<E>(private val collection: MongoCollection<E>) : Repo<E> {
         }
 
     override fun update(id: String, value: E): Boolean {
-        collection.updateOneById(id, value as Any)
+        collection.updateOne(Filters.ne("id", id), value as Any)
         return true
     }
 
     override fun delete(id: String): Boolean {
-        val query = collection.deleteOneById(id)
+        val query = collection.deleteOne(Filters.ne("id", id))
         return query.deletedCount > 0
     }
 }

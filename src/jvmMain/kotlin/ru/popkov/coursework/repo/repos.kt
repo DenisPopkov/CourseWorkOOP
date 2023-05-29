@@ -1,7 +1,6 @@
 package ru.popkov.coursework.repo
 
 import com.mongodb.client.MongoDatabase
-import common.Item
 import data.Grade
 import data.GradeInfo
 import data.Lesson
@@ -14,9 +13,11 @@ private val mongoDatabase: MongoDatabase = client.getDatabase("admin")
 
 private val students = mongoDatabase.getCollection<Student>().apply { drop() }
 private val lessons = mongoDatabase.getCollection<Lesson>().apply { drop() }
+private val grades = mongoDatabase.getCollection<GradeInfo>().apply { drop() }
 
-val studentsRepo = MongoRepo<Student>(students)
-val lessonsRepo = MongoRepo<Lesson>(lessons)
+val studentsRepo = MongoRepo(students)
+val lessonsRepo = MongoRepo(lessons)
+val gradesRepo = MongoRepo(grades)
 
 fun createTestData() {
     listOf(
@@ -41,26 +42,10 @@ fun createTestData() {
     }
 
     val students = studentsRepo.read()
-    val studentList = mutableListOf<Item<Student>>()
-
-//    val studentDocument = students.map { Document(it.id, it.elem) }.filter { !it.keys.contains("_id") }
-//    val studentDocumentKeys = studentDocument.map { it.keys }
-//    val studentDocumentValues = studentDocument.map { it.values }
-//
-//    studentDocumentValues.forEachIndexed { index, element ->
-//        val jsonString = element.first().json
-//        val itemSerializer: AnySerializer<Student> = anySerializer()
-//        val st = Json.decodeFromString(itemSerializer, jsonString)
-//        studentList.add(Item(studentDocumentKeys[index].toString(), st))
-//    }
-//
-//    studentList.forEach {
-//        println("efefe student - ${it.id}, ${it.elem.firstname}, ${it.elem.surname}")
-//    }
-
     val lessons = lessonsRepo.read()
     val sheldon = students.findLast { it.elem.firstname == "Sheldon" }
     check(sheldon != null)
+    gradesRepo.create(GradeInfo(sheldon.id, Grade.A))
     val leonard = students.findLast { it.elem.firstname == "Leonard" }
     check(leonard != null)
     val math = lessons.findLast { it.elem.name == "Math" }

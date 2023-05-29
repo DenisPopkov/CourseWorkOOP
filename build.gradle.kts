@@ -58,6 +58,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
+                implementation("org.mongodb:bson:4.9.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
                 implementation("io.ktor:ktor-client-core:$ktor_version")
                 implementation("io.ktor:ktor-client-resources:$ktor_version")
@@ -88,10 +89,12 @@ kotlin {
                 implementation("io.ktor:ktor-server-cors")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-server-websockets")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.0")
                 implementation("ch.qos.logback:logback-classic:1.2.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinx_html_version")
                 implementation("org.litote.kmongo:kmongo-serialization:4.9.0")
                 implementation("org.litote.kmongo:kmongo-id-serialization:4.9.0")
+                implementation("org.mongodb:bson:4.9.1")
                 implementation("io.kotest:kotest-runner-junit5:$kotestVersion")
                 implementation("io.kotest:kotest-assertions-core:$kotestVersion")
                 implementation("org.litote.kmongo:kmongo-serialization:4.9.0")
