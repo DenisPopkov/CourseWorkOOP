@@ -11,11 +11,10 @@ fun Route.gradeRoutes() {
     route(Config.gradesPath) {
         repoRoutes(gradesRepo)
         get("ByStartName/{startName}") {
-            val startName =
-                call.parameters["startName"] ?: return@get call.respondText(
-                    "Missing or malformed startName",
-                    status = HttpStatusCode.BadRequest
-                )
+            call.parameters["startName"] ?: return@get call.respondText(
+                "Missing or malformed startName",
+                status = HttpStatusCode.BadRequest
+            )
             val grades = gradesRepo.read().filter {
                 it.elem.grade?.mark == 5
             }

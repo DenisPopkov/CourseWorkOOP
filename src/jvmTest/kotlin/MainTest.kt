@@ -51,7 +51,7 @@ class ApplicationTest : StringSpec({
                     size shouldBe 1
                 }
             }
-            val updatedGrade = withClue("update grade") {
+            withClue("update grade") {
                 client.put("/grades/${grades.first().id}") {
                     contentType(ContentType.Application.Json)
                     setBody(GradeInfo(grades.first().id, Grade.B).json)
