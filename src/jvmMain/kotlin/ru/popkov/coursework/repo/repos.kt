@@ -1,12 +1,15 @@
 package ru.popkov.coursework.repo
 
+import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoDatabase
 import data.Grade
 import data.GradeInfo
 import data.Lesson
 import data.Student
+import org.bson.UuidRepresentation
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.withKMongo
 
 private val client = KMongo.createClient("mongodb://root:example@127.0.0.1:27017")
 private val mongoDatabase: MongoDatabase = client.getDatabase("admin")

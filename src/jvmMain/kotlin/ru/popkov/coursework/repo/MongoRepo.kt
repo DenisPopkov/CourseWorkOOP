@@ -9,27 +9,21 @@ import java.util.*
 
 class MongoRepo<E>(private val collection: MongoCollection<E>) : Repo<E> {
 
-    private val ids = mutableListOf<String>()
-
     override fun create(element: E): Boolean {
-        Item(UUID.randomUUID().toString(), element)
-            .let {
-                ids.add(it.id)
-                collection.insertOne(it.elem)
-            }
-
+        collection.insertOne(element)
         return true
     }
 
     override fun read(): List<Item<E>> {
-        return collection.find().mapIndexed { index, element ->
-            Item(ids[index], element)
+        return collection.find().map { element ->
+            val itemId = collection.find(Item<E>::elem eq element).showRecordId(true).toString()
+            Item(itemId, element)
         }.toList()
     }
 
     override fun read(id: String): Item<E>? {
-        return collection.find().mapIndexed { index, element ->
-            Item(ids[index], element)
+        return collection.find().map { element ->
+            Item(id, element)
         }.firstOrNull()
     }
 
