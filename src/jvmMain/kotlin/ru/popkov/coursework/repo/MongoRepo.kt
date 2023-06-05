@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import common.Item
 import io.ktor.server.html.*
+import org.bson.Document
 import org.litote.kmongo.*
 import java.util.*
 
@@ -15,8 +16,9 @@ class MongoRepo<E>(private val collection: MongoCollection<E>) : Repo<E> {
     }
 
     override fun read(): List<Item<E>> {
-        return collection.find().map { element ->
-            val itemId = collection.find(Item<E>::elem eq element).showRecordId(true).toString()
+        val idsDocuments = collection.withDocumentClass<Document>().find().distinct()
+        return collection.find().mapIndexed { index, element ->
+            val itemId = idsDocuments[index].values.elementAt(0).toString()
             Item(itemId, element)
         }.toList()
     }
